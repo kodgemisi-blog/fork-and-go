@@ -1,0 +1,41 @@
+:toc: left
+:icons: font
+:nofooter:
+:source-highlighter: coderay
+:docinfo: shared,private
+
+= <Blog post title>
+<Writer Name, don't put new line between this and the title>
+
+.Please read following instructions before writing a blog post
+* Change `com.kodgemisi.blog.demo` package to `com.kodgemisi.blog.<yourpackage>`. Choose a meaningful package name.
+  ** Make sure your package starts with `com.kodgemisi.blog`.
+* Don't add a configuration file other than `application.yml` unless it's specifically required by your blog post subject.
+  ** Use `dev` profile unless it's specifically required otherwise by your blog post subject.
+* Change everything in form of `<some text>` with your values.
+* Put all images and videos under images folder. link them as follows: `image::images/usage.gif`
+* You need to run `mvn clean compile` in order the blog post to be generated. It will be generated to `docs/index.html` file.
+* Remember that this blog post's default license is public domain.
+* Remove this list.
+
+== Introduction
+
+< *Briefly* explain the goal of this blog post.>
+
+< Put an image or preferably a gif/video to show how the finished work would seem or behave >
+
+== Getting started
+
+< Explain, in details, the steps to prepare the development environment (Database, cache, library configuration etc.) to successfully run the sample code in this repository. >
+
+== <Write your blog post...>
+
+====
+
+We can't use `Set` with checkboxes, we need to use `List` otherwise following exception occurs:
+
+```
+Invalid property 'permissions[0]' of bean class [com.kodgemisi.blog.dynamicauthorization.usermanagement.RoleDto]: Illegal attempt to get property 'permissions' threw exception; nested exception is org.springframework.beans.InvalidPropertyException: Invalid property 'permissions[0]' of bean class [com.kodgemisi.blog.dynamicauthorization.usermanagement.RoleDto]: Cannot get element with index 0 from Set of size 0, accessed using property path 'permissions[0]'
+```
+
+====

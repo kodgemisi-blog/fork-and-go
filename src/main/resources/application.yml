@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+
+
+logging:
+  level:
+    org.hibernate.type: trace # to show SQL value bindings
+
+server:
+  servlet:
+    session:
+      persistent: true
+  tomcat:
+    basedir: .target/tmp

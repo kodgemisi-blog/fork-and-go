@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Role management</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Roles</h1>
+
+    <a th:href="@{/roles/new}" class="mb-3 d-block" data-toggle="modal" data-target="#newRoleModal">Create new role</a>
+
+    <div class="accordion" id="rolesAccordion">
+
+        <div class="card" th:each="role : ${roles}" th:object="${role}">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" th:data-target="'#' + *{name}">
+                        [[*{name}]]
+                    </button>
+                </h2>
+            </div>
+
+            <div th:id="*{name}" class="collapse" data-parent="#rolesAccordion">
+                <div class="card-body">
+
+                    <div>
+                        <form th:action="@{/roles/__${role.name}__}" th:method="delete" onsubmit="return confirm('Are you sure?')">
+                            <button class="btn btn-danger">Delete '[[*{name}]]' role</button>
+                        </form>
+                    </div>
+
+                    <th:block th:replace="~{/usermanagement/fragments :: permission-list(${role})}" />
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="spinner" class="d-none justify-content-center align-items-center position-absolute w-100 h-100" style="z-index: 1; background-color: rgba(0,0,0,.5); top:0; left: 0;">
+    <div class="spinner-border align-middle" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!--Form modal-->
+<div class="modal fade" id="newRoleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Create new role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form th:action="@{/roles}" class="mt-1" th:object="${newRole}" method="post">
+                <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="name">Role name</label>
+                            <input type="text" class="form-control" id="isbn" th:field="*{name}">
+                        </div>
+
+                        <th:block th:replace="~{/usermanagement/fragments :: permission-list(${newRole})}" />
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary">Create role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script>
+    $(function () {
+
+        const csrfToken = $('meta[name="_csrf"]').attr('content');
+        const csrfHeaderName = $('meta[name="_csrf_header"]').attr('content');
+
+        const headers = new Headers({
+            [csrfHeaderName]: csrfToken,
+            'Content-Type': 'application/json'
+        });
+
+        $('#rolesAccordion [type=checkbox]').on('change', function () {
+            const selected = $(this).is(':checked');
+            const url = $(this).attr('url');
+
+            showLoader();
+
+            // See https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+            fetch(url, {
+                headers,
+                method: selected ? 'PATCH' : 'DELETE'
+            })
+            .then(res => console.log(res))
+            .then(res => hideLoader())
+            .catch(error => {
+                hideLoader();
+                console.error(error);
+            });
+        });
+    });
+
+    const loaderMinimumShowIntervalInMs = 500;
+    let loaderShownTime;
+    function showLoader() {
+        loaderShownTime = new Date().getTime();
+        $('#spinner').removeClass('d-none').addClass('d-flex');
+    }
+
+    function hideLoader() {
+        const now = new Date().getTime();
+
+        const elapsed = now - loaderShownTime;
+        const delay = loaderMinimumShowIntervalInMs - elapsed;
+
+        // Show the loader for at least `loaderMinimumShowIntervalInMs` milliseconds. Otherwise it seems like a flicker in the screen.
+        setTimeout(function () {
+            $('#spinner').removeClass('d-flex').addClass('d-none');
+        }, delay);
+    }
+</script>
+
+</body>
+</html>
